@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  
+}
+
+model User {
+  id           Int           @id @default(autoincrement()) @map("id_user")
+  username     String        @unique
+  password     String
+  role         String        @default("customer")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  transactions Transaction[]
+
+  @@map("users")
+}
+
+model Kategori {
+  id   Int    @id @default(autoincrement()) @map("id_kategori")
+  name String @unique
+  cars Car[]
+
+  @@map("categories")
+}
+
+model Supplier {
+  id    Int     @id @default(autoincrement()) @map("id_supplier")
+  name  String  @unique
+  city  String?
+  phone String?
+  cars  Car[]
+
+  @@map("suppliers")
+}
+
+model Car {
+  id               Int               @id @default(autoincrement()) @map("id_car")
+  name             String
+  brand            String
+  price            Int
+  year             Int
+  color            String?
+  stock            Int               @default(0)
+  id_kategori      Int
+  id_supplier      Int
+  category         Kategori          @relation(fields: [id_kategori], references: [id])
+  supplier         Supplier          @relation(fields: [id_supplier], references: [id])
+  created_at       DateTime          @default(now())
+  updated_at       DateTime          @updatedAt
+  transactionItems TransactionItem[]
+
+  @@map("cars")
+}
+
+model Transaction {
+  id         Int               @id @default(autoincrement()) @map("id_transaction")
+  id_user    Int
+  totalPrice Int
+  status     String            @default("pending")
+  createdAt  DateTime          @default(now())
+  user       User              @relation(fields: [id_user], references: [id])
+  items      TransactionItem[]
+
+  @@map("transactions")
+}
+
+model TransactionItem {
+  id             Int         @id @default(autoincrement()) @map("id_transaction_item")
+  id_transaction Int
+  id_car         Int
+  quantity       Int
+  price          Int
+  subtotal       Int
+  transaction    Transaction @relation(fields: [id_transaction], references: [id])
+  car            Car         @relation(fields: [id_car], references: [id])
+
+  @@map("transaction_items")
+}
