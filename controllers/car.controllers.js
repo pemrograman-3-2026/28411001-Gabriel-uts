@@ -1,12 +1,12 @@
 import { prisma } from '../lib/prisma.js'
- 
+
 export const getAll = async (req, res) => {
     const data = await prisma.car.findMany({
         include: { category: true, supplier: true }
     })
     return res.json({ message: 'OK', data })
 }
- 
+
 export const getById = async (req, res) => {
     const data = await prisma.car.findUnique({
         where: { id: parseInt(req.params.id) },
@@ -15,7 +15,7 @@ export const getById = async (req, res) => {
     if (!data) return res.status(404).json({ message: 'Mobil tidak ditemukan!' })
     return res.json({ message: 'OK', data })
 }
- 
+
 export const getStokMenipis = async (req, res) => {
     const data = await prisma.car.findMany({
         where: { stock: { lte: 3 } },
@@ -23,14 +23,22 @@ export const getStokMenipis = async (req, res) => {
     })
     return res.json({ message: 'Stok menipis', data })
 }
- 
+
+export const getStokHabis = async (req, res) => {
+    const data = await prisma.car.findMany({
+        where: { stock: { equals: 0 } },
+        include: { category: true, supplier: true }
+    })
+    return res.json({ message: 'Stok habis', data })
+}
+
 export const create = async (req, res) => {
     const { name, brand, price, year, color, stock, id_kategori, id_supplier } = req.body
- 
+
     if (!name || !brand || !price || !year || !id_kategori || !id_supplier) {
         return res.status(400).json({ message: 'Field name, brand, price, year, id_kategori, id_supplier wajib diisi' })
     }
- 
+
     const data = await prisma.car.create({
         data: {
             name, brand,
@@ -45,17 +53,17 @@ export const create = async (req, res) => {
     })
     return res.status(201).json({ message: 'Mobil berhasil ditambahkan!', data })
 }
- 
+
 export const update = async (req, res) => {
     const { name, brand, price, year, color, stock, id_kategori, id_supplier } = req.body
- 
+
     const data = await prisma.car.update({
         where: { id: parseInt(req.params.id) },
         data: { name, brand, price, year, color, stock, id_kategori, id_supplier }
     })
     return res.json({ message: 'Mobil berhasil diupdate!', data })
 }
- 
+
 export const remove = async (req, res) => {
     await prisma.car.delete({ where: { id: parseInt(req.params.id) } })
     return res.json({ message: 'Mobil berhasil dihapus!' })
