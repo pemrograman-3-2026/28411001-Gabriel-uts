@@ -8,11 +8,36 @@ export const getAll = async (req, res) => {
 }
  
 export const getByUser = async (req, res) => {
-    const data = await prisma.transaction.findMany({
-        where: { id_user: parseInt(req.params.id_user) },
-        include: { items: { include: { car: true } } }
-    })
-    return res.json({ message: 'OK', data })
+    try {
+        console.log("PARAMS =", req.params)
+
+        const data = await prisma.transaction.findMany({
+            where: {
+                id_user: parseInt(req.params.id_user)
+            },
+            include: {
+                items: {
+                    include: {
+                        car: true
+                    }
+                }
+            }
+        })
+
+        console.log("DATA =", data)
+
+        return res.json({
+            message: 'OK',
+            data
+        })
+
+    } catch (err) {
+        console.log("ERROR DETAIL =", err)
+
+        return res.status(500).json({
+            message: err.message
+        })
+    }
 }
  
 export const getById = async (req, res) => {

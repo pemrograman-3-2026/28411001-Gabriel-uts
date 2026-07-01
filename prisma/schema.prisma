@@ -11,8 +11,9 @@ datasource db {
 model User {
   id           Int           @id @default(autoincrement()) @map("id_user")
   username     String        @unique
+  no_telp      String        @default("")
   password     String
-  role         String        @default("customer")
+  role         String        @default("user")
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   transactions Transaction[]

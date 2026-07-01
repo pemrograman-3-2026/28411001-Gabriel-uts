@@ -8,9 +8,12 @@ import transactionRoute from './routes/transaction.route.js'
  
 const app = express()
 app.use(express.json())
-app.use(cors())
- 
-app.get('/', (req, res) => res.send('🚗 Showroom Mobil API berjalan!'))
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true
+}))
+
+app.get('/', (req, res) => res.send(' Showroom Mobil API berjalan!'))
  
 app.use('/auth', authRoute)
 app.use('/kategori', kategoriRoute)
